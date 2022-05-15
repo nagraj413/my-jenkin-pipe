@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Git clone') {
+            steps {
+                git 'https://github.com/boxfuse/boxfuse-sample-java-war-hello.git' 
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'mvn clean install package'
+            }
+        }
+         stage('Deploy') {
+            steps {
+                sshagent(['ec2_user']) {
+    sh "scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/war_tom/target/hello-1.0.war ec2-user@18.169.238.108:/root/tomcat/webapps/."
+
+}
+            }
+        }
+    }
+}
